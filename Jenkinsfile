@@ -1,20 +1,23 @@
 pipeline {
     agent any
-    
-    stages{
-        stage("Code"){
-            steps{
-                git url: "https://github.com/vedantkuber/DevOps-project.git", branch: "jenkins"
+    stages {
+        stage('Clone Code') {
+            steps {
+                // Replace with your GitHub repository URL
+                git branch: 'main', url: 'https://github.com/vedantkuber/DevOps-project.git'
             }
         }
-        stage("Build & Test"){
-            steps{
-                sh "docker build . -t flaskapp"
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t flaskapp:latest .'
             }
         }
-        stage("Deploy"){
-            steps{
-                sh "docker-compose down && docker-compose up -d"
+        stage('Deploy with Docker Compose') {
+            steps {
+                // Stop existing containers if they are running
+                sh 'docker compose down || true'
+                // Start the application, rebuilding the flask image
+                sh 'docker compose up -d --build'
             }
         }
     }
